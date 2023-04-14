@@ -23,8 +23,10 @@ class News
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $predictRatingV1 = null;
+    #[ORM\Column(nullable: true, options: [
+        "default" => 666,
+    ])]
+    private ?int $predictRatingV1 = 666;
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $url = null;

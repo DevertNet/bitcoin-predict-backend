@@ -10,10 +10,13 @@
         "doctrine/doctrine-bundle": "^2.9",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
+        "guzzlehttp/guzzle": "^7.5",
+        "openai-php/client": "^0.4.2",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.0.*",
+        "symfony/monolog-bundle": "^3.8",
         "symfony/runtime": "6.0.*",
         "symfony/yaml": "6.0.*"
     },
@@ -24,7 +27,8 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "php-http/discovery": true
         },
         "optimize-autoloader": true,
         "preferred-install": {
