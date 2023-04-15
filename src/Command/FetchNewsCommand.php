@@ -23,7 +23,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class FetchNewsCommand extends Command
 {
-    private $mediastackLimit = 10;
+    private $mediastackLimit = 100;
     private $logger;
     private $entityManager;
     private $io;
@@ -47,7 +47,7 @@ class FetchNewsCommand extends Command
 
         // Define date range
         $endDate = new DateTime('now');
-        $startDate = (new DateTime('now'))->modify('-1 days');
+        $startDate = (new DateTime('now'))->modify('-3 month');
 
         // Fetch news for each day
         $date = clone $endDate;
@@ -123,22 +123,42 @@ class FetchNewsCommand extends Command
             $this->logger->info(sprintf('Start add news: %s', $newsItem['title']));
 
             try {
+                // Check if an entity with the same data already exists
+                $existingEntity = $this->entityManager->getRepository(News::class)
+                ->findOneBy([
+                    'url' => $newsItem['url'],
+                ]);
+                if ($existingEntity !== null) {
+                    continue;
+                }
+
+                // Create new news item...
                 $news = new News();
                 $news->setTitle($newsItem['title']);
                 $news->setText($newsItem['description']);
                 $news->setUrl($newsItem['url']);
                 $news->setDate(new \DateTime($newsItem['published_at']));
                 //$news->setPredictRatingV1(0);
+
                 $entityManager->persist($news);
+                $entityManager->flush();
 
                 $this->io->success('DONE');
                 $this->logger->info('DONE');
             } catch (\Exception $th) {
-                $this->io->error('ERROR: ' . $th->getMessage());
-                $this->logger->error('ERROR', $th->getMessage());
+                if (!$this->entityManager->isOpen()) {
+                    // create a new instance of the EntityManager
+                    $this->entityManager = $this->entityManager->create(
+                        $this->entityManager->getConnection(),
+                        $this->entityManager->getConfiguration()
+                    );
+                }
+                $this->io->info('ERROR: ' . $th->getMessage());
+                $this->logger->error('ERROR', [$th->getMessage()]);
             }
         }
-        $entityManager->flush();
+
+
     }
 
     protected function getDataFromApi(DateTime $date, int $page = 1): array

@@ -28,7 +28,7 @@ class News
     ])]
     private ?int $predictRatingV1 = 666;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(type: Types::TEXT, unique: true)]
     private ?string $url = null;
 
     public function getId(): ?int
