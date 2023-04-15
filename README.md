@@ -6,7 +6,7 @@ Fetch news articles and rate them with the help of chatgpt. Provide a api for bi
 
 - Fetch more news
 - Rate with chatgpt
-- Rate with popularity
+- Rate with popularity (Global Ranking from https://www.similarweb.com/website/theage.com.au/#overview)
 - Maybe late: fetch content from news sites; currently only the title will be rated
 
 # Rating Method for PredictRatingV1
