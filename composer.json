@@ -11,6 +11,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
         "guzzlehttp/guzzle": "^7.5",
+        "nelmio/cors-bundle": "^2.3",
         "openai-php/client": "^0.4.2",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
