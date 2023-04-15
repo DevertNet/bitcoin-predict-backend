@@ -44,6 +44,7 @@ class PredictRatingV1Command extends Command
 
         $news = $this->getUnproccssedNews();
         foreach ($news as $newsEntity) {
+            $io->info('Process: ' . $newsEntity->getTitle());
             $this->proccessNewsEntity($newsEntity);
         }
 
@@ -52,15 +53,20 @@ class PredictRatingV1Command extends Command
         return Command::SUCCESS;
     }
 
-    public function proccessNewsEntity(News $newsEntity)
+    public function proccessNewsEntity(News $newsEntity): int
     {
-        var_dump($this->getChatGptRating($newsEntity));
+        $rating = $this->getChatGptRating($newsEntity);
 
-        return;
-        $news->setPredictRatingV1('New text');
+        $this->logger->info('Ratet V1', [
+            'news' => $newsEntity->getTitle(),
+            'rating' => $rating
+        ]);
+        $newsEntity->setPredictRatingV1($rating);
 
         // Save the changes to the database
         $this->entityManager->flush();
+
+        return $rating;
     }
 
     public function getChatGptRating(News $newsEntity): int
