@@ -24,6 +24,8 @@ class PredictRatingV1Command extends Command
     private $chatGptService;
     private $entityManager;
     private $prompt = 'Forget all your previous instructions. Pretend you are a financial expert. You are a financial expert with stock recommendation experience. Answer “YES” if good news, “NO” if bad news, or “UNKNOWN” if uncertain in the first line. Then elaborate with one short and concise sentence on the next line. Headline:';
+    private $domainPopularity = [];
+    private $io;
 
     public function __construct(LoggerInterface $logger, ChatGptService $chatGptService, EntityManagerInterface $entityManager)
     {
@@ -40,25 +42,43 @@ class PredictRatingV1Command extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
 
         $news = $this->getUnproccssedNews();
         foreach ($news as $newsEntity) {
-            $io->info('Process: ' . $newsEntity->getTitle());
+            $this->io->info('Process: ' . $newsEntity->getTitle());
             $this->proccessNewsEntity($newsEntity);
+            $this->io->info('Remaining: ' . $this->getNewsWith666());
         }
 
-        $io->success('DONE.');
+        $this->io->success('DONE.');
 
         return Command::SUCCESS;
     }
 
+    public function getNewsWith666()
+    {
+        $count = $this->entityManager->getRepository(News::class)->createQueryBuilder('n')
+            ->select('COUNT(n.id)')
+            ->where('n.predictRatingV1 = :predictRatingV1')
+            ->setParameter('predictRatingV1', '666')
+            ->getQuery()
+            ->getSingleScalarResult();
+        return $count;
+    }
+
     public function proccessNewsEntity(News $newsEntity): int
     {
-        $rating = $this->getChatGptRating($newsEntity);
 
+        $chatGptRating = $this->getChatGptRating($newsEntity);
+        $popularityScore = $this->getPopularityScore($newsEntity);
+        $rating = $chatGptRating * $popularityScore;
+
+        $this->io->info('Rating: ' . $rating);
         $this->logger->info('Ratet V1', [
             'news' => $newsEntity->getTitle(),
+            'chatGptRating' => $chatGptRating,
+            'popularityScore' => $popularityScore,
             'rating' => $rating
         ]);
         $newsEntity->setPredictRatingV1($rating);
@@ -67,6 +87,13 @@ class PredictRatingV1Command extends Command
         $this->entityManager->flush();
 
         return $rating;
+    }
+
+    public function getPopularityScore(News $newsEntity): float
+    {
+        $domain = preg_replace('/^www\./', '', parse_url($newsEntity->getUrl(), PHP_URL_HOST));
+        $newValue = ($this->getPopularityForDomain($domain) - 1) * (0.5 - 1) / (3000000 - 1) + 1;
+        return $newValue;
     }
 
     public function getChatGptRating(News $newsEntity): int
@@ -81,10 +108,10 @@ class PredictRatingV1Command extends Command
 
         switch ($result) {
             case 'YES':
-                return 5;
+                return 10;
                 break;
             case 'NO':
-                return -5;
+                return -10;
                 break;
             default:
                 return 0;
@@ -105,5 +132,34 @@ class PredictRatingV1Command extends Command
         $news = $query->getResult();
 
         return $news;
+    }
+
+    public function getPopularityForDomain(string $domain): int
+    {
+        if(!$this->domainPopularity) {
+            // TODO: Put this in a service...
+            $file = fopen('var/domain-popularity.csv', 'r');
+
+            // Initialize an empty array to store the data
+            $data = [];
+
+            // Loop through each row in the CSV file
+            while (($row = fgetcsv($file)) !== false) {
+                // Append the row to the data array
+                $data[] = $row;
+            }
+
+            fclose($file);
+
+            $this->domainPopularity = $data;
+        }
+
+        foreach ($this->domainPopularity as $item) {
+            if($item[0]===$domain) {
+                return $item[1];
+            }
+        }
+
+        return 0;
     }
 }

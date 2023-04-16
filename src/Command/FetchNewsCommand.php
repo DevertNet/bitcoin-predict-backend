@@ -47,7 +47,7 @@ class FetchNewsCommand extends Command
 
         // Define date range
         $endDate = new DateTime('now');
-        $startDate = (new DateTime('now'))->modify('-3 month');
+        $startDate = (new DateTime('now'))->modify('-12 month');
 
         // Fetch news for each day
         $date = clone $endDate;
