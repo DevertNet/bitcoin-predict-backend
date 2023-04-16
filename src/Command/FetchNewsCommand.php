@@ -176,7 +176,7 @@ class FetchNewsCommand extends Command
                 'query' => [
                     'access_key' => $_ENV['MEDIASTACK_API_KEY'],
                     'languages' => 'en',
-                    'categories' => 'general,technology,business',
+                    'categories' => 'general,technology,business', // TODO: Save category to news entity
                     //'keywords' => 'crypto bitcoin',
                     'date' => $date->format('Y-m-d'),
                     'offset' => ($page - 1) * $this->mediastackLimit,
