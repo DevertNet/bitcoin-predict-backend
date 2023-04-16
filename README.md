@@ -2,6 +2,10 @@
 
 Fetch news articles and rate them with the help of chatgpt. Provide a api for bitcoin-predict-frontend.
 
+# License
+
+If you make money with this method. It would be great if you gave me some of your profit. I have not been able to use the method successfully so far. I assume no responsibility for anything.
+
 # Install
 
 tbd
@@ -48,6 +52,8 @@ tbd
 tbd
 
 # Rating Method for PredictRatingV1
+
+If you want to use this method, please adjust the `FetchNewsCommand.php` regarding to the news scope. Delete all news before this. I don't want a perfect tool, im just interessted in the results. Sorry for my lazyness :D
 
 ## Method
 
