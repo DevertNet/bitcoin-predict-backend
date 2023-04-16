@@ -39,5 +39,8 @@ The problem why it can't work is perhaps the too small selection of news.
 Fetch news into database:
 `./bin/console app:fetch-news`
 
-Then rate the news with chatgpt:
-```./bin/console app:rate-news`
+Then rate the news for a given method:
+`./bin/console app:predict-rating-v1`
+
+Update the csv with domain popularity infos:
+`./bin/console app:update-popularity-csv`
