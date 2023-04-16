@@ -32,6 +32,7 @@ The problem why it can't work is perhaps the too small selection of news.
 - Switch to another news api, if mediastack cannot provide historical news.
 - Scrape the content of the news and include dem in the ChatGPT rating.
 - Make the prompt more bitcoin-based. ChatGpt may therefore not rate the news in relation to bitcoin.
+- Change the popularity ratio to 0.1 to 1. This will give more impact for the popularity.
 
 # Usage
 
