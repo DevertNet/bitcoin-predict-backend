@@ -55,7 +55,7 @@ abstract class PredictRatingCommandAbstract extends Command
 
     public function getNewsWith666()
     {
-        // TODO: Put this in a service etc?
+        // TODO: Put this in the repository class
         $count = $this->entityManager->getRepository(News::class)->createQueryBuilder('n')
             ->select('COUNT(n.id)')
             ->where('n.' . $this->methodName . ' = :ratingValue')
@@ -95,6 +95,7 @@ abstract class PredictRatingCommandAbstract extends Command
 
     public function getUnproccssedNews(): array
     {
+        // TODO: Put this in the repository class
         $queryBuilder = $this->entityManager->createQueryBuilder();
 
         $query = $queryBuilder->select('n')
@@ -110,8 +111,8 @@ abstract class PredictRatingCommandAbstract extends Command
 
     public function getPopularityForDomain(string $domain): int
     {
+        // TODO: Put this in a service...
         if(!$this->domainPopularity) {
-            // TODO: Put this in a service...
             $file = fopen('var/domain-popularity.csv', 'r');
 
             // Initialize an empty array to store the data

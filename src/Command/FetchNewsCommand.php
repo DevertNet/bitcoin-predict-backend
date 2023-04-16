@@ -19,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:fetch-news',
-    description: 'Fetch news from mediastack.',
+    description: 'Fetch news from mediastack per day. Fetched days will be marked as done and will be skiped on the next run.',
 )]
 class FetchNewsCommand extends Command
 {
@@ -39,11 +39,19 @@ class FetchNewsCommand extends Command
 
     protected function configure(): void
     {
+        $this
+            ->addOption('reset-cache', null, InputOption::VALUE_NONE, 'Reset the day cache.')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
+
+        if($input->getOption('reset-cache')) {
+            $this->io->success('Cache will reseted!');
+            $this->setAllMediastackEntitiesToUndone();
+        }
 
         // Define date range
         $endDate = new DateTime('now');
@@ -168,8 +176,8 @@ class FetchNewsCommand extends Command
                 'query' => [
                     'access_key' => $_ENV['MEDIASTACK_API_KEY'],
                     'languages' => 'en',
-                    'categories' => 'technology,business',
-                    'keywords' => 'crypto bitcoin',
+                    'categories' => 'general,technology,business',
+                    //'keywords' => 'crypto bitcoin',
                     'date' => $date->format('Y-m-d'),
                     'offset' => ($page - 1) * $this->mediastackLimit,
                     'limit' => $this->mediastackLimit
@@ -182,5 +190,18 @@ class FetchNewsCommand extends Command
         }
 
         return [];
+    }
+
+    protected function setAllMediastackEntitiesToUndone()
+    {
+        // TODO: Put this in the Repo Class
+        $mediaStackRepository = $this->entityManager->getRepository(Mediastack::class);
+        $mediaStackEntries = $mediaStackRepository->findAll();
+
+        foreach ($mediaStackEntries as $mediaStackEntry) {
+            $mediaStackEntry->setDone(0);
+        }
+
+        $this->entityManager->flush();
     }
 }
