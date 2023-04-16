@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Exception;
 use App\Entity\News;
 use App\Service\ChatGptService;
 use Psr\Log\LoggerInterface;
