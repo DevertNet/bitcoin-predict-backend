@@ -31,6 +31,11 @@ class News
     #[ORM\Column(type: Types::TEXT, unique: true)]
     private ?string $url = null;
 
+    #[ORM\Column(nullable: true, options: [
+        "default" => 666,
+    ])]
+    private ?int $predictRatingV2 = 666;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +97,18 @@ class News
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function getPredictRatingV2(): ?int
+    {
+        return $this->predictRatingV2;
+    }
+
+    public function setPredictRatingV2(?int $predictRatingV2): self
+    {
+        $this->predictRatingV2 = $predictRatingV2;
 
         return $this;
     }

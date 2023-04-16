@@ -21,6 +21,7 @@ Update the csv with domain popularity infos. This should be used after `app:fetc
 
 Then rate the news for a given method:
 `./bin/console app:predict-rating-v1`
+`./bin/console app:predict-rating-v2`
 
 # Rating Method for PredictRatingV2
 
