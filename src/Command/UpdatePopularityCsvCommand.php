@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use App\Entity\News;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,6 +22,7 @@ class UpdatePopularityCsvCommand extends Command
 {
     private $filePath = 'var/domain-popularity.csv';
     private $entityManager;
+    private $io;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
@@ -35,7 +38,7 @@ class UpdatePopularityCsvCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
 
         $outputArray = $this->readCsv();
 
@@ -49,7 +52,7 @@ class UpdatePopularityCsvCommand extends Command
                 }
             }
             if (!$found) {
-                $outputArray[] = [$domain, 0];
+                $outputArray[] = [$domain, $this->getGlobalRankFromSimlarWebForDomain($domain)];
             }
         }
 
@@ -61,9 +64,39 @@ class UpdatePopularityCsvCommand extends Command
         }
         fclose($fp);
 
-        $io->info(sprintf('<info>CSV file written to: %s</info>', $this->filePath));
+        $this->io->info(sprintf('<info>CSV file written to: %s</info>', $this->filePath));
 
         return Command::SUCCESS;
+    }
+
+    public function getGlobalRankFromSimlarWebForDomain(string $domain): int
+    {
+        $client = new Client();
+
+        try {
+            $response = $client->request('GET', 'https://api.similarweb.com/v1/similar-rank/'.$domain.'/rank?api_key='.$_ENV['SIMLARWEB_API_KEY'], [
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Encoding' => 'gzip, deflate, br',
+                    'Accept-Language' => 'en-US,en;q=0.5',
+                    'Referer' => 'https://www.google.com/',
+                    'Upgrade-Insecure-Requests' => '1',
+                    'Connection' => 'keep-alive'
+                ]
+            ]);
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() === 404) {
+                $this->io->info('Could not get global rank for domain: ' . $domain);
+                return 0;
+            } else {
+                $this->io->error($e->getMessage());
+            }
+        }
+
+        $data = json_decode($response->getBody()->getContents());
+
+        return $data->similar_rank->rank;
     }
 
     public function getNewsDomainsWithoutWww(): array
