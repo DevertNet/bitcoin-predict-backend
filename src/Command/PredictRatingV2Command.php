@@ -48,6 +48,9 @@ class PredictRatingV2Command extends PredictRatingCommandAbstract
     {
         $domain = preg_replace('/^www\./', '', parse_url($newsEntity->getUrl(), PHP_URL_HOST));
         $newValue = ($this->getPopularityForDomain($domain) - 1) * (0.1 - 1) / (3000000 - 1) + 1;
+        if($newValue < 0.1) {
+            $newValue = 0.1;
+        }
         return $newValue;
     }
 }

@@ -33,7 +33,7 @@ Then rate the news for a given method:
 
 - Every news will be rated between -10 and 10; -10 is bad; 10 is good
 - Ask chatgpt for rate the news title: positive = 10, negative=-10 and neutral=0
-- Add popularity based on source. I used the Global Ranking from https://www.similarweb.com/website/theage.com.au/#overview. The rank (3000000 to 1) will be transformed to 0.1 and 1. The transformed value will be multiplied with the inital score from chatgpt.
+- Add popularity based on source. I used the Global Ranking from https://www.similarweb.com/. The rank (3000000 to 1) will be transformed to 0.1 and 1. The transformed value will be multiplied with the inital score from chatgpt.
 - Used news scope:
   - api: mediastack.com
   - languages: en
@@ -49,7 +49,9 @@ tbd
 
 ## Recommendation and ideas for v3
 
-tbd
+- Switch to another news api, if mediastack cannot provide historical news.
+- Scrape the content of the news and include dem in the ChatGPT rating.
+- Add Twitter hashtag #bitcoin ranking/usage to the score
 
 # Rating Method for PredictRatingV1
 
