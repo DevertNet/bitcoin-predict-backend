@@ -52,13 +52,13 @@ class FetchNewsCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
 
         if($input->getOption('reset-cache')) {
-            throw new Exception('tbd :D');
+            throw new Exception('tbd :D'); // TODO: Reset news request cache
             $this->io->success('Cache will reseted!');
         }
 
         // Define date range
         $endDate = new DateTime('now');
-        $startDate = (new DateTime('now'))->modify('-3 month');
+        $startDate = (new DateTime('now'))->modify('-4 month');
 
         // Fetch news for each day
         $date = clone $endDate;

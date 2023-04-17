@@ -62,6 +62,7 @@ Then rate the news for a given method:
   - api: thenewsapi.com
   - languages: en
   - categories: general,business,tech,politics
+  - exclude_categories: sports
   - domain: nytimes.com,cnn.com,bbc.co.uk,theguardian.com
   - search: -sport+-museums
 

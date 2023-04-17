@@ -17,6 +17,7 @@ class ApiTheNewsApi extends ApiAbstract
                     'api_token' => $_ENV['THENEWSAPI_API_KEY'],
                     'language' => 'en',
                     'categories' => 'general,business,tech,politics',
+                    'exclude_categories' => 'sports',
                     'domains' => 'nytimes.com,cnn.com,bbc.co.uk,theguardian.com',
                     'search' => '-sport+-museums',
                     'published_on' => $date->format('Y-m-d'),
