@@ -7,6 +7,7 @@ use DateTimeInterface;
 use App\Entity\News;
 use App\Entity\Mediastack;
 use App\Service\NewsApi\ApiMediastack;
+use App\Service\NewsApi\ApiTheNewsApi;
 use App\Service\NewsApi\NewsRequestItem;
 use GuzzleHttp\Client;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,11 +31,11 @@ class FetchNewsCommand extends Command
     private $apiMediastack;
     private $io;
 
-    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, ApiMediastack $apiMediastack)
+    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, ApiMediastack $apiMediastack, ApiTheNewsApi $apiTheNewsApi)
     {
         $this->logger = $logger;
         $this->entityManager = $entityManager;
-        $this->newsApi = $apiMediastack;
+        $this->newsApi = $apiTheNewsApi;
         $this->client = new Client();
 
         parent::__construct();
@@ -58,7 +59,7 @@ class FetchNewsCommand extends Command
 
         // Define date range
         $endDate = new DateTime('now');
-        $startDate = (new DateTime('now'))->modify('-4 month');
+        $startDate = (new DateTime('now'))->modify('-3 month');
 
         // Fetch news for each day
         $date = clone $endDate;

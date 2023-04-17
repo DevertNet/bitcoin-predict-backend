@@ -6,6 +6,12 @@ Fetch news articles and rate them with the help of chatgpt. Provide a api for bi
 
 If you make money with this method. It would be great if you gave me some of your profit. I have not been able to use the method successfully so far. I assume no responsibility for anything.
 
+# Requirements
+
+- TheNewsApi Subscription
+- OpenAi Account with billing details
+- Simlarweb Account (Free Version)
+
 # Install
 
 tbd
@@ -34,10 +40,19 @@ Then rate the news for a given method:
 - Every news will be rated between -10 and 10; -10 is bad; 10 is good
 - Ask chatgpt for rate the news title: positive = 10, negative=-10 and neutral=0
 - Add popularity based on source. I used the Global Ranking from https://www.similarweb.com/. The rank (3000000 to 1) will be transformed to 0.1 and 1. The transformed value will be multiplied with the inital score from chatgpt.
-- Used news scope:
+- Used news scope 1:
+  - Date: 2023-02-10 to 2023-04-17; I rechead the limit and decided to switch to thenewsapi.com, because the historical data from mediastack not working...
   - api: mediastack.com
   - languages: en
   - categories: technology,business,general
+- Used news scope 2:
+  - Hint: Need to set some filters, because the amount of ALL news (more than 1 000 000) is to height...so i filter the news sources to some domains. So we get around 40k of news for this scope.
+  - Date: 2023-01-01 to 2023-04-17
+  - api: thenewsapi.com
+  - languages: en
+  - categories: general,business,tech,politics
+  - domain: nytimes.com,cnn.com,bbc.co.uk,theguardian.com
+  - search: -sport+-museums
 
 ## Prompt
 

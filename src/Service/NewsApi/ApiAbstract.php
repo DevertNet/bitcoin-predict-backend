@@ -28,11 +28,10 @@ abstract class ApiAbstract
     {
         $hash = md5(implode('', [$method, $url, serialize($query)]));
 
-
         $newsApiRequest = $this->getNewsApiRequestByHash($hash);
         if($newsApiRequest) {
             // Return cached data
-            $response = json_decode($newsApiRequest->getResponse());
+            $response = json_decode($newsApiRequest->getResponse(), true);
         } else {
             // fetch data from api
             $response = $this->client->request($method, $url, [
@@ -40,13 +39,13 @@ abstract class ApiAbstract
             ]);
 
             // Safe data in cache
-            $entity = new NewsApiRequest();
+            $entity = new NewsApiRequests();
             $entity->setHash($hash);
             $entity->setUrl($url);
             $entity->setQuery(json_encode($query));
             $entity->setResponse($response->getBody());
-            $this->em->persist($entity);
-            $this->em->flush();
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
 
             $response = json_decode($response->getBody(), true);
         }

@@ -1,10 +1,11 @@
 <?php
 
+namespace App\Service\NewsApi;
+
 class NewsRequestItem
 {
     private $title;
     private $text;
-    private $description;
     private $url;
     private $date;
     private $category;
@@ -27,16 +28,6 @@ class NewsRequestItem
     public function getText()
     {
         return $this->text;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function getDescription()
-    {
-        return $this->description;
     }
 
     public function setUrl($url)
