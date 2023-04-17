@@ -23,6 +23,8 @@ The analyses of 3,5 month costs around 40 dollar.
 
 # Install
 
+I have only brought the whole project so far that it runs locally. If you want to install it on a server, further steps may be necessary.
+
 1. `composer install`
 2. Update `.env` file
 3. `bin/console doctrine:database:create`
