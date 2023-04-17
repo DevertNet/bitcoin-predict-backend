@@ -1,6 +1,6 @@
 # bitcoin-predict-backend
 
-Fetch news articles and rate them with the help of chatgpt. Provide a api for bitcoin-predict-frontend.
+Fetch news articles and rate them with the help of chatgpt. Provide a api for bitcoin-predict-frontend (https://github.com/DevertNet/bitcoin-predict-frontend).
 
 tl/dr: A little further down I have documented my results with the tool. Maybe that's enough for one or the other ;)
 
@@ -30,7 +30,7 @@ I have only brought the whole project so far that it runs locally. If you want t
 3. `bin/console doctrine:database:create`
 4. `bin/console doctrine:migrations:migrate`
 5. See Usage
-6. Install bitcoin-predict-frontend to see results in a graph
+6. Install https://github.com/DevertNet/bitcoin-predict-frontend to see results in a graph
 
 Webserver should use `/public` as doc root. But you can use ddev (config included) or maybe `bin/console server:start` to launch that thing for the frontend.
 
