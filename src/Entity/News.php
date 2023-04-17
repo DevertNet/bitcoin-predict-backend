@@ -36,6 +36,9 @@ class News
     ])]
     private ?int $predictRatingV2 = 666;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -109,6 +112,18 @@ class News
     public function setPredictRatingV2(?int $predictRatingV2): self
     {
         $this->predictRatingV2 = $predictRatingV2;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

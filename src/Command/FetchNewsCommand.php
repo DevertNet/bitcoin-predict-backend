@@ -6,6 +6,8 @@ use DateTime;
 use DateTimeInterface;
 use App\Entity\News;
 use App\Entity\Mediastack;
+use App\Service\NewsApi\ApiMediastack;
+use App\Service\NewsApi\NewsRequestItem;
 use GuzzleHttp\Client;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,15 +25,16 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class FetchNewsCommand extends Command
 {
-    private $mediastackLimit = 100;
     private $logger;
     private $entityManager;
+    private $apiMediastack;
     private $io;
 
-    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, ApiMediastack $apiMediastack)
     {
         $this->logger = $logger;
         $this->entityManager = $entityManager;
+        $this->newsApi = $apiMediastack;
         $this->client = new Client();
 
         parent::__construct();
@@ -49,8 +52,8 @@ class FetchNewsCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
 
         if($input->getOption('reset-cache')) {
+            throw new Exception('tbd :D');
             $this->io->success('Cache will reseted!');
-            $this->setAllMediastackEntitiesToUndone();
         }
 
         // Define date range
@@ -74,134 +77,68 @@ class FetchNewsCommand extends Command
 
         // fetch news articles for each page
         for ($page = 1; $page <= $pages; $page++) {
-            $mediastackItem = $this->getMediastackItemForDate($date, $page);
-
-            // Check if we already fetched this day complete
-            if($mediastackItem->getDone()) {
-                $this->logger->info('Skip date, because its done.', [
-                    'date' => $date
-                ]);
-                return;
-            }
-
             $this->logger->info('Start import for day.', [
                 'date' => $date,
                 'page' => $page
             ]);
 
             // Fetch data from api
-            $response = $this->getDataFromApi($date);
-            $this->importNews($response['data']);
+            $response = $this->newsApi->getNewsForDate($date, $page);
+
+            foreach ($this->newsApi->getItems() as $newsRequestItem) {
+                $this->importNews($newsRequestItem);
+            }
 
             // Calculate total amount of pages
-            $pages = ceil($response['pagination']['total'] / $this->mediastackLimit);
+            $pages = $this->newsApi->getTotalPages();
         }
 
         $this->logger->info('Fetched all .', [
             'date' => $date
         ]);
-
-        // Set mediastack date to done
-        $mediastackItem->setDone(1);
-        $this->entityManager->flush();
     }
 
-    private function getMediastackItemForDate(DateTime $date): Mediastack
-    {
-        $mediastackItem = $this->entityManager->getRepository(Mediastack::class)->findOneBy([
-            'date' => $date,
-        ]);
-
-        if (!$mediastackItem) {
-            $mediastackItem = new Mediastack();
-            $mediastackItem->setDate($date);
-            $mediastackItem->setDone(0);
-            $this->entityManager->persist($mediastackItem);
-            $this->entityManager->flush();
-        }
-
-        return $mediastackItem;
-    }
-
-    private function importNews(array $mediastackNews)
+    private function importNews(NewsRequestItem $newsRequestItem)
     {
         $entityManager = $this->entityManager;
-        foreach ($mediastackNews as $newsItem) {
-            $this->io->note(sprintf('Start add news: %s', $newsItem['title']));
-            $this->logger->info(sprintf('Start add news: %s', $newsItem['title']));
 
-            try {
-                // Check if an entity with the same data already exists
-                $existingEntity = $this->entityManager->getRepository(News::class)
-                ->findOneBy([
-                    'url' => $newsItem['url'],
-                ]);
-                if ($existingEntity !== null) {
-                    continue;
-                }
+        $this->io->note(sprintf('Start add news: %s', $newsRequestItem->getTitle()));
+        $this->logger->info(sprintf('Start add news: %s', $newsRequestItem->getTitle()));
 
-                // Create new news item...
-                $news = new News();
-                $news->setTitle($newsItem['title']);
-                $news->setText($newsItem['description']);
-                $news->setUrl($newsItem['url']);
-                $news->setDate(new \DateTime($newsItem['published_at']));
-                //$news->setPredictRatingV1(0);
-
-                $entityManager->persist($news);
-                $entityManager->flush();
-
-                $this->io->success('DONE');
-                $this->logger->info('DONE');
-            } catch (\Exception $th) {
-                if (!$this->entityManager->isOpen()) {
-                    // create a new instance of the EntityManager
-                    $this->entityManager = $this->entityManager->create(
-                        $this->entityManager->getConnection(),
-                        $this->entityManager->getConfiguration()
-                    );
-                }
-                $this->io->info('ERROR: ' . $th->getMessage());
-                $this->logger->error('ERROR', [$th->getMessage()]);
-            }
-        }
-
-
-    }
-
-    protected function getDataFromApi(DateTime $date, int $page = 1): array
-    {
         try {
-            $response = $this->client->request('GET', 'http://api.mediastack.com/v1/news', [
-                'query' => [
-                    'access_key' => $_ENV['MEDIASTACK_API_KEY'],
-                    'languages' => 'en',
-                    'categories' => 'general,technology,business', // TODO: Save category to news entity
-                    //'keywords' => 'crypto bitcoin',
-                    'date' => $date->format('Y-m-d'),
-                    'offset' => ($page - 1) * $this->mediastackLimit,
-                    'limit' => $this->mediastackLimit
-                ]
+            // Check if an entity with the same data already exists
+            $existingEntity = $this->entityManager->getRepository(News::class)
+            ->findOneBy([
+                'url' => $newsRequestItem->getUrl(),
             ]);
-            $data = json_decode($response->getBody(), true);
-            return $data;
+            if ($existingEntity !== null) {
+                return;
+            }
+
+            // Create new news item...
+            $news = new News();
+            $news->setTitle($newsRequestItem->getTitle());
+            $news->setText($newsRequestItem->getText());
+            $news->setUrl($newsRequestItem->getUrl());
+            $news->setDate($newsRequestItem->getDate());
+            $news->setCategory($newsRequestItem->getCategory());
+
+            $entityManager->persist($news);
+            $entityManager->flush();
+
+            $this->io->success('DONE');
+            $this->logger->info('DONE');
         } catch (\Exception $th) {
-            $this->logger->error('Cant fetch data from mediastack api: ', [$th->getMessage()]);
+            if (!$this->entityManager->isOpen()) {
+                // create a new instance of the EntityManager
+                $this->entityManager = $this->entityManager->create(
+                    $this->entityManager->getConnection(),
+                    $this->entityManager->getConfiguration()
+                );
+            }
+            $this->io->info('ERROR: ' . $th->getMessage());
+            $this->logger->error('ERROR', [$th->getMessage()]);
         }
 
-        return [];
-    }
-
-    protected function setAllMediastackEntitiesToUndone()
-    {
-        // TODO: Put this in the Repo Class
-        $mediaStackRepository = $this->entityManager->getRepository(Mediastack::class);
-        $mediaStackEntries = $mediaStackRepository->findAll();
-
-        foreach ($mediaStackEntries as $mediaStackEntry) {
-            $mediaStackEntry->setDone(0);
-        }
-
-        $this->entityManager->flush();
     }
 }
