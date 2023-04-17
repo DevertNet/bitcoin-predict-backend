@@ -2,31 +2,42 @@
 
 Fetch news articles and rate them with the help of chatgpt. Provide a api for bitcoin-predict-frontend.
 
+tl/dr: A little further down I have documented my results with the tool. Maybe that's enough for one or the other ;)
+
+# Idea of this project
+
+I had my idea for the project before a few years. My idea was that you can predict the Bitcoin price with the help of news. The thesis was: if there is a lot of positive news, then the price will rise in the next few days. If there is more negative news, then it sings. Since ChatGPT is a tool that can be used to rate text very well, I have now implemented it.
+Due to other things, I lost sight of that a bit. But after a researcher confirmed the whole thing for shares a few days ago, I was fired up again.
+
 # License
 
 If you make money with this method. It would be great if you gave me some of your profit. I have not been able to use the method successfully so far. I assume no responsibility for anything.
 
 # Requirements
 
-- TheNewsApi Subscription
-- OpenAi Account with billing details
+- TheNewsApi Subscription (19$ per month)
+- OpenAi Account with billing details (around 19$ / 50k news)
 - Simlarweb Account (Free Version)
+
+The analyses of 3,5 month costs around 40 dollar.
 
 # Install
 
-tbd
+1. `composer install`
+2. Update `.env` file
+3. `bin/console doctrine:database:create`
+4. `bin/console doctrine:migrations:migrate`
+5. See Usage
+6. Install bitcoin-predict-frontend to see results in a graph
 
-1. Update `.env` file
-2. Run migrations
-3. See Usage
-4. Install bitcoin-predict-frontend to see results
+Webserver should use `/public` as doc root. But you can use ddev (config included) or maybe `bin/console server:start` to launch that thing for the frontend.
 
 # Usage
 
-Fetch news into database. News will be fetched per day. Every day will be fetched only once if that day is done. So you can start this command more than once. If you want to refetch all days you can use the option `--reset-cache`.
+Fetch news into database. News will be fetched per day. Every API Request to the news api will be cached in the database. So this command can safly fired multiple times without run in api limitations.
 `./bin/console app:fetch-news`
 
-Update the csv with domain popularity infos. This should be used after `app:fetch-news`:
+Update the csv with domain popularity infos. This should be used after `app:fetch-news`. The command will put all domains from the fetched news in a csv and also fetch the simlarweb Global Rank. The simlarweb API will be only called once per domain. So you can safly fired multiple times.
 `./bin/console app:update-popularity-csv`
 
 Then rate the news for a given method:
@@ -65,7 +76,7 @@ tbd
 ## Recommendation and ideas for v3
 
 - Switch to another news api, if mediastack cannot provide historical news.
-- Scrape the content of the news and include dem in the ChatGPT rating.
+- Scrape the content of the news and include them in the ChatGPT rating. But i think because of the big amount of news this make no sense.
 - Add Twitter hashtag #bitcoin ranking/usage to the score
 
 # Rating Method for PredictRatingV1
