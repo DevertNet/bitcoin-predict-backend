@@ -5,7 +5,6 @@ namespace App\Command;
 use DateTime;
 use DateTimeInterface;
 use App\Entity\News;
-use App\Entity\Mediastack;
 use App\Service\NewsApi\ApiMediastack;
 use App\Service\NewsApi\ApiTheNewsApi;
 use App\Service\NewsApi\NewsRequestItem;
@@ -22,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:fetch-news',
-    description: 'Fetch news from mediastack per day. Fetched days will be marked as done and will be skiped on the next run.',
+    description: 'Fetch news per day for the last x month.',
 )]
 class FetchNewsCommand extends Command
 {
