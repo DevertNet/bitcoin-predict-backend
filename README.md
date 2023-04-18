@@ -53,20 +53,17 @@ Then rate the news for a given method:
 - Every news will be rated between -10 and 10; -10 is bad; 10 is good
 - Ask chatgpt for rate the news title: positive = 10, negative=-10 and neutral=0
 - Add popularity based on source. I used the Global Ranking from https://www.similarweb.com/. The rank (3000000 to 1) will be transformed to 0.1 and 1. The transformed value will be multiplied with the inital score from chatgpt.
-- Used news scope 1:
-  - Date: 2023-02-10 to 2023-04-17; I rechead the limit and decided to switch to thenewsapi.com, because the historical data from mediastack not working...
-  - api: mediastack.com
-  - languages: en
-  - categories: technology,business,general
-- Used news scope 2:
-  - Hint: Need to set some filters, because the amount of ALL news (more than 1 000 000) is to height...so i filter the news sources to some domains. So we get around 40k of news for this scope.
+- Used news scope:
+  - Hint: Switched to TheNewsApi, because i reached the limit at mediastack. Plus the historical data not work. Need to set some filters, because the amount of ALL news (more than 1 000 000) is to height...so i filter the news sources to some domains. So we get around 40k of news for this scope.
   - Date: 2023-01-01 to 2023-04-17
   - api: thenewsapi.com
   - languages: en
   - categories: general,business,tech,politics
   - exclude_categories: sports
   - domain: nytimes.com,cnn.com,bbc.co.uk,theguardian.com
-  - search: -sport+-museums
+  - search: -sport+-museums+-football+-rugby+-Bundesliga+-Premier
+  - search_fields: title,main_text,description,keywords
+  - url: don't import news with string 'sport' in url, because the categories are not 100% perfect
 
 ## Prompt
 
@@ -76,11 +73,14 @@ Forget all your previous instructions. Pretend you are a financial and crypto ex
 
 tbd
 
+The inclusion of the popularity can now almost be dispensed with, as the news is only drawn from very popular domains. However, the function can't hurt if you need it again in the future.
+
 ## Recommendation and ideas for v3
 
-- Switch to another news api, if mediastack cannot provide historical news.
-- Scrape the content of the news and include them in the ChatGPT rating. But i think because of the big amount of news this make no sense.
+- Fetch news for 12 months instead of 4.
 - Add Twitter hashtag #bitcoin ranking/usage to the score
+- Create a data-driven analysis instead of a visual one.
+- Scrape the content of the news and include them in the ChatGPT rating. But i think because of the big amount of news this make no sense.
 
 # Rating Method for PredictRatingV1
 

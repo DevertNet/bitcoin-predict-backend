@@ -13,13 +13,18 @@ class ApiTheNewsApi extends ApiAbstract
     public function getNewsForDate(DateTime $date, int $page = 1): array
     {
         try {
+            // https://api.thenewsapi.com/v1/news/all?api_token=xxx&language=en
+            // &categories=general,business,tech,politics&exclude_categories=sports
+            // &domains=nytimes.com,cnn.com,bbc.co.uk,theguardian.com
+            // &search=-sport+-museums+-football+-rugby+-Bundesliga+-Premier&published_after=2023-01-01&search_fields=title,main_text,description,keywords
             $response = $this->call('GET', 'https://api.thenewsapi.com/v1/news/all', [
                     'api_token' => $_ENV['THENEWSAPI_API_KEY'],
                     'language' => 'en',
                     'categories' => 'general,business,tech,politics',
                     'exclude_categories' => 'sports',
                     'domains' => 'nytimes.com,cnn.com,bbc.co.uk,theguardian.com',
-                    'search' => '-sport+-museums',
+                    'search' => '-sport+-museums+-football+-rugby+-Bundesliga+-Premier',
+                    'search_fields' => 'title,main_text,description,keywords',
                     'published_on' => $date->format('Y-m-d'),
                     'page' => $page,
                     'limit' => $this->limit
@@ -49,6 +54,10 @@ class ApiTheNewsApi extends ApiAbstract
 
         $out = [];
         foreach ($this->response['data'] as $rawItem) {
+            if (strpos($rawItem['url'], 'sport') !== false) {
+                continue;
+            }
+
             $newsRequestItem = new NewsRequestItem();
             $newsRequestItem->setTitle($rawItem['title']);
             $newsRequestItem->setText($rawItem['description']);
