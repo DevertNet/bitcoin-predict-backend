@@ -42,7 +42,7 @@ Fetch news into database. News will be fetched per day. Every API Request to the
 Update the csv with domain popularity infos. This should be used after `app:fetch-news`. The command will put all domains from the fetched news in a csv and also fetch the simlarweb Global Rank. The simlarweb API will be only called once per domain. So you can safly fired multiple times.
 `./bin/console app:update-popularity-csv`
 
-Then rate the news for a given method:
+Then rate the news for a given method. Several processes can be executed in parallel, as a random news item is always evaluated.
 `./bin/console app:predict-rating-v1`
 `./bin/console app:predict-rating-v2`
 
@@ -81,6 +81,7 @@ The inclusion of the popularity can now almost be dispensed with, as the news is
 - Add Twitter hashtag #bitcoin ranking/usage to the score
 - Create a data-driven analysis instead of a visual one.
 - Scrape the content of the news and include them in the ChatGPT rating. But i think because of the big amount of news this make no sense.
+- Implement multithreading for `./bin/console app:predict-rating-v3`. Every prediction need around 1s. 40k news need 11 to 12 hours...
 
 # Rating Method for PredictRatingV1
 

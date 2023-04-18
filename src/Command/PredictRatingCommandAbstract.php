@@ -103,6 +103,7 @@ abstract class PredictRatingCommandAbstract extends Command
             ->from(News::class, 'n')
             ->where('n.' . $this->methodName . ' = :ratingValue')
             ->setParameter('ratingValue', 666)
+            ->orderBy('RAND()')
             ->getQuery();
 
         $news = $query->getResult();
