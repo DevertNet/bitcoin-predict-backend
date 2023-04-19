@@ -1,0 +1,43 @@
+name: PHPUnit
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: pdo_mysql
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Start MySQL
+        uses: docker-compose-action@v1
+        with:
+          compose-files: |
+            version: '3.7'
+            services:
+              db:
+                image: mysql:8.0
+                ports:
+                  - "3306:3306"
+                environment:
+                  MYSQL_ROOT_PASSWORD: db
+                  MYSQL_DATABASE: db
+                  MYSQL_USER: db
+                  MYSQL_PASSWORD: db
+          run: |
+            docker-compose up -d
+
+      - name: Run Symfony migrations
+        run: bin/console doctrine:migrations:migrate --no-interaction
+
+      - name: Run PHPUnit tests
+        run: composer test
