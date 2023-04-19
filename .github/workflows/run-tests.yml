@@ -33,6 +33,12 @@ jobs:
           mysql user: "db" # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: "db" # Required if "mysql user" exists. The password for the "mysql user"
 
+      - name: Wait for MySQL
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --password=db --silent; do
+            sleep 1
+          done
+
       - name: Install dependencies
         run: composer install
 
