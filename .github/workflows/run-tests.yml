@@ -12,8 +12,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.0"
-          extensions: pdo_mysql
+          php-version: "8.1"
+          extensions: pdo_mysql, mbstring, intl, gd, xml, dom, json, fileinfo, curl, zip, iconv, simplexml, pdo, mysql
 
       - name: Install dependencies
         run: composer install
