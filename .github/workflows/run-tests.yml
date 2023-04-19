@@ -31,6 +31,10 @@ jobs:
           mysql user: "db" # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: "db" # Required if "mysql user" exists. The password for the "mysql user"
 
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1 db" | sudo tee -a /etc/hosts
+
       - name: Run Symfony migrations
         run: bin/console doctrine:migrations:migrate --no-interaction
 
