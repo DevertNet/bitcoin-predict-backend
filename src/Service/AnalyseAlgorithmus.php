@@ -17,6 +17,11 @@ class AnalyseAlgorithmus
         $this->coingeckoApi = $coingeckoApi;
     }
 
+    /**
+     * getRecommendation
+     *
+     * @return 'WAIT'|'BUY'|'HOLD'|'SELL_POSITIVE'|'SELL_NEGATIV'|'HOLD_RESET'|'UNKNOWN'
+     */
     public function getRecommendation(
         DateTime $date,
         bool $isInvested,
@@ -39,7 +44,7 @@ class AnalyseAlgorithmus
 
         // If we have a spike after buy: reset buydate to spike date
         // But only if not older than current date...
-        if($hasSpikeAfterBuy && $spikeDate<=$date) {
+        if($holdLongerOnNewSpike && $hasSpikeAfterBuy && $spikeDate<=$date) {
             $buyDate = $this->getSpikeDateAfterBuy($buyDate, $minHoldDays, $buyWhenNewsValueGte);
             $exitDate = (clone $buyDate)->modify('+'.$minHoldDays.' days');
         }
@@ -48,7 +53,7 @@ class AnalyseAlgorithmus
             return 'WAIT';
         } elseif(!$isInvested && $currentRating>=$buyWhenNewsValueGte) {
             return 'BUY';
-        } elseif($isInvested && $currentRating>=$buyWhenNewsValueGte) {
+        } elseif($isInvested && $holdLongerOnNewSpike && $hasSpikeAfterBuy && $currentRating>=$buyWhenNewsValueGte) {
             return 'HOLD_RESET';
         } elseif($isInvested && $date > $buyDate && $currentPrice > $buyPrice) {
             return 'SELL_POSITIVE';

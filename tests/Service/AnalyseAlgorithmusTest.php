@@ -75,6 +75,26 @@ class AnalyseAlgorithmusTest extends AppTestCase
         ));
 
         $this->assertEquals('HOLD', $analyseAlgorithmus->getRecommendation(
+            new DateTime('2020-01-05'), // currentDate
+            1, // isInvested
+            10200, // buyPrice
+            new DateTime('2020-01-04'), // buyDate
+            20, // buyWhenNewsValueGte
+            2, // minHoldDays
+            0 // holdLongerOnNewSpike
+        ));
+
+        $this->assertEquals('SELL_NEGATIV', $analyseAlgorithmus->getRecommendation(
+            new DateTime('2020-01-06'), // currentDate
+            1, // isInvested
+            10200, // buyPrice
+            new DateTime('2020-01-04'), // buyDate
+            20, // buyWhenNewsValueGte
+            2, // minHoldDays
+            0 // holdLongerOnNewSpike
+        ));
+
+        $this->assertEquals('HOLD', $analyseAlgorithmus->getRecommendation(
             new DateTime('2020-01-06'), // currentDate
             1, // isInvested
             10200, // buyPrice
