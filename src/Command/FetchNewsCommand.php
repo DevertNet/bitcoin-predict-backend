@@ -44,6 +44,8 @@ class FetchNewsCommand extends Command
     {
         $this
             ->addOption('reset-cache', null, InputOption::VALUE_NONE, 'Reset the day cache.')
+            ->addArgument('end-date', InputArgument::OPTIONAL, 'Set end date for the import. Format: 2023-04-14. Default: now', 'now')
+            ->addArgument('start-date', InputArgument::OPTIONAL, 'Set start date for the import. Format: 2023-04-14. Default: now', 'now')
         ;
     }
 
@@ -57,8 +59,8 @@ class FetchNewsCommand extends Command
         }
 
         // Define date range
-        $endDate = new DateTime('now');
-        $startDate = (new DateTime('now'))->modify('-4 month');
+        $endDate = (new DateTime($input->getArgument('end-date')))->setTime(0, 0, 0);
+        $startDate = (new DateTime($input->getArgument('start-date')))->setTime(0, 0, 0);
 
         // Fetch news for each day
         $date = clone $endDate;

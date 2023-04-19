@@ -28,7 +28,7 @@ class ApiTheNewsApi extends ApiAbstract
                     'published_on' => $date->format('Y-m-d'),
                     'page' => $page,
                     'limit' => $this->limit
-                ]);
+                ], $date);
             return $this->getItems();
         } catch (\Exception $th) {
             $this->logger->error('Cant fetch data from api: ', [$th->getMessage()]);

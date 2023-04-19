@@ -21,7 +21,7 @@ class ApiMediastack extends ApiAbstract
                     'date' => $date->format('Y-m-d'),
                     'offset' => ($page - 1) * $this->limit,
                     'limit' => $this->limit
-                ]);
+                ], $date);
             return $this->getItems();
         } catch (\Exception $th) {
             $this->logger->error('Cant fetch data from api: ', [$th->getMessage()]);

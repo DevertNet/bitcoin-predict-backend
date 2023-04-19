@@ -24,12 +24,13 @@ abstract class ApiAbstract
         $this->client = new Client();
     }
 
-    public function call(string $method, string $url, array $query): array
+    public function call(string $method, string $url, array $query, DateTime $date): array
     {
         $hash = md5(implode('', [$method, $url, serialize($query)]));
 
         $newsApiRequest = $this->getNewsApiRequestByHash($hash);
-        if($newsApiRequest) {
+        $isToday = $date->format('Y-m-d') === (new DateTime('now'))->format('Y-m-d');
+        if($newsApiRequest && !$isToday) {
             // Return cached data
             $response = json_decode($newsApiRequest->getResponse(), true);
         } else {
@@ -38,14 +39,17 @@ abstract class ApiAbstract
                 'query' => $query
             ]);
 
-            // Safe data in cache
-            $entity = new NewsApiRequests();
-            $entity->setHash($hash);
-            $entity->setUrl($url);
-            $entity->setQuery(json_encode($query));
-            $entity->setResponse($response->getBody());
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
+            // Safe data in cache, but not for today
+            // the news for day can change. For tomorrow there will be no new news.
+            if(!$isToday) {
+                $entity = new NewsApiRequests();
+                $entity->setHash($hash);
+                $entity->setUrl($url);
+                $entity->setQuery(json_encode($query));
+                $entity->setResponse($response->getBody());
+                $this->entityManager->persist($entity);
+                $this->entityManager->flush();
+            }
 
             $response = json_decode($response->getBody(), true);
         }
