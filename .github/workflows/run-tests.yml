@@ -39,6 +39,9 @@ jobs:
             sleep 1
           done
 
+      - name: Replace APP_ENV
+        run: sed -i 's/APP_ENV=dev/APP_ENV=ci/' .env
+
       - name: Install dependencies
         run: composer install
 
