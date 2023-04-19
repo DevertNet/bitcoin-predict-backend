@@ -15,8 +15,10 @@ jobs:
           php-version: "8.1"
           extensions: pdo_mysql, mbstring, intl, gd, xml, dom, json, fileinfo, curl, zip, iconv, simplexml, pdo, mysql
 
-      - name: Install dependencies
-        run: composer install
+      - name: Add hosts to /etc/hosts
+        run: |
+          sudo echo "127.0.0.1 db" | sudo tee -a /etc/hosts
+          cat /etc/hosts
 
       - name: Start MySQL
         uses: mirromutth/mysql-action@v1.1
@@ -31,9 +33,8 @@ jobs:
           mysql user: "db" # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: "db" # Required if "mysql user" exists. The password for the "mysql user"
 
-      - name: Add hosts to /etc/hosts
-        run: |
-          sudo echo "127.0.0.1 db" | sudo tee -a /etc/hosts
+      - name: Install dependencies
+        run: composer install
 
       - name: Run Symfony migrations
         run: bin/console doctrine:migrations:migrate --no-interaction
