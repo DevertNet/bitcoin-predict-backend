@@ -28,9 +28,10 @@ I have only brought the whole project so far that it runs locally. If you want t
 1. `composer install`
 2. Update `.env` file
 3. `bin/console doctrine:database:create`
-4. `bin/console doctrine:migrations:migrate`
-5. See Usage
-6. Install https://github.com/DevertNet/bitcoin-predict-frontend to see results in a graph
+4. `bin/console doctrine:schema:create`
+5. `bin/console doctrine:migrations:migrate`
+6. See Usage
+7. Install https://github.com/DevertNet/bitcoin-predict-frontend to see results in a graph
 
 Webserver should use `/public` as doc root. But you can use ddev (config included) or maybe `bin/console server:start` to launch that thing for the frontend.
 
@@ -116,3 +117,9 @@ The problem why it can't work is perhaps the too small selection of news.
 - Scrape the content of the news and include dem in the ChatGPT rating.
 - Make the prompt more bitcoin-based. ChatGpt may therefore not rate the news in relation to bitcoin.
 - Change the popularity ratio to 0.1 to 1. This will give more impact for the popularity.
+
+# PHPUnit
+
+PHPUnit can use the normal database, because its self cleaning. There is NO `_test` suffix for the db.
+
+`composer test`

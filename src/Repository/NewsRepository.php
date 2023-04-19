@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\News;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,6 +40,32 @@ class NewsRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * Get the predict value for a specific date for predictRatingV2
+     *
+     * @param  mixed $date
+     * @return int
+     */
+    public function getPredictRatingV2ForDate(DateTime $date): int
+    {
+        $query = $this->createQueryBuilder('n')
+            ->where('n.predictRatingV2 != :predictRatingV2')
+            ->setParameter('predictRatingV2', 666)
+            ->andWhere('n.date >= :startDate')
+            ->setParameter('startDate', (clone $date)->setTime(0, 0, 0))
+            ->andWhere('n.date <= :endDate')
+            ->setParameter('endDate', (clone $date)->setTime(23, 59, 59))
+            ->getQuery();
+
+        $news = $query->getResult();
+
+        $value = 0;
+        foreach ($news as $newsEntity) {
+            $value += $newsEntity->getPredictRatingV2();
+        }
+
+        return $value;
+    }
 //    /**
 //     * @return News[] Returns an array of News objects
 //     */
