@@ -19,9 +19,9 @@ jobs:
         run: composer install
 
       - name: Start MySQL
-        uses: docker-compose-action@v1
+        uses: docker/compose-action@v1.2.0
         with:
-          compose-files: |
+          compose-file: |
             version: '3.7'
             services:
               db:
@@ -33,8 +33,7 @@ jobs:
                   MYSQL_DATABASE: db
                   MYSQL_USER: db
                   MYSQL_PASSWORD: db
-          run: |
-            docker-compose up -d
+          command: up -d
 
       - name: Run Symfony migrations
         run: bin/console doctrine:migrations:migrate --no-interaction
