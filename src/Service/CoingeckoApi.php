@@ -89,8 +89,6 @@ class CoingeckoApi
                 ]
             }';
         } else {
-            var_dump('NOOO');
-            die;
             $client = new Client();
             $response = $client->request('GET', 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart', [
                 'query' => [

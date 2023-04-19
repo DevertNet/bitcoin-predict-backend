@@ -13,7 +13,7 @@ class AnalyseService
     private $coingeckoApi;
     public $matrix = [
         [
-            'buyWhenNewsValueGte' => 180,
+            'buyWhenNewsValueGte' => 200,
             'minHoldDays' => 3,
             'holdLongerOnNewSpike' => true,
         ]
