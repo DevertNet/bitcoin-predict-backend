@@ -15,6 +15,13 @@ If you make money with this method. It would be great if you gave me some of you
 
 # Requirements
 
+## Tech
+
+- PHP 8.1
+- MariaDB 10.4 (MySQL is not working because of the error SQLSTATE[42000]: Syntax error or access violation: 1170 BLOB/TEXT column 'url' used in key specification without a key length )
+
+## APIs
+
 - TheNewsApi Subscription (19$ per month)
 - OpenAi Account with billing details (around 19$ / 50k news)
 - Simlarweb Account (Free Version)
