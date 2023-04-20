@@ -11,11 +11,26 @@ class AnalyseService
     private $entityManager;
     private $analyseAlgorithmus;
     private $coingeckoApi;
+    /**
+     * 01.01.2023 - 18.04.2023
+     * 200 3 true  = 1010.10
+     * 200 2 true  = 971.47
+     * 200 2 false = 1065.50
+     * 180 2 true  = 1251.30
+     * 180 2 false = 1158.24
+     * 180 1 true  = 1165.09
+     * 180 1 false = 1070.33
+     */
     public $matrix = [
         [
             'buyWhenNewsValueGte' => 200,
-            'minHoldDays' => 3,
+            'minHoldDays' => 2,
             'holdLongerOnNewSpike' => true,
+        ],
+        [
+            'buyWhenNewsValueGte' => 200,
+            'minHoldDays' => 2,
+            'holdLongerOnNewSpike' => false,
         ]
     ];
 
