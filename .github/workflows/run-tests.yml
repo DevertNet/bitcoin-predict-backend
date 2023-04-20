@@ -46,8 +46,10 @@ jobs:
       - name: Install dependencies
         run: composer install
 
-      - name: Run Symfony migrations
-        run: bin/console doctrine:migrations:migrate --no-interaction
+      - name: Install App
+        run: |
+          bin/console doctrine:schema:create --no-interaction
+          bin/console doctrine:migrations:migrate --no-interaction
 
       - name: Run PHPUnit tests
         run: composer test
