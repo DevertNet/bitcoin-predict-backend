@@ -29,7 +29,6 @@ jobs:
           collation server: "utf8_general_ci" # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
           mysql version: "8.0" # Optional, default value is "latest". The version of the MySQL
           mysql database: "db" # Optional, default value is "test". The specified database which will be create
-          mysql root password: "db" # Required if "mysql user" is empty, default is empty. The root superuser password
           mysql user: "db" # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: "db" # Required if "mysql user" exists. The password for the "mysql user"
 
@@ -40,7 +39,9 @@ jobs:
           done
 
       - name: Replace APP_ENV
-        run: sed -i 's/APP_ENV=dev/APP_ENV=ci/' .env
+        run: |
+          sed -i 's/APP_ENV=dev/APP_ENV=ci/' .env
+          cat .env
 
       - name: Install dependencies
         run: composer install
