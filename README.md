@@ -9,55 +9,6 @@ tl/dr: A little further down I have documented my results with the tool. Maybe t
 I had my idea for the project before a few years. My idea was that you can predict the Bitcoin price with the help of news. The thesis was: if there is a lot of positive news, then the price will rise in the next few days. If there is more negative news, then it sings. Since ChatGPT is a tool that can be used to rate text very well, I have now implemented it.
 Due to other things, I lost sight of that a bit. But after a researcher confirmed the whole thing for shares a few days ago, I was fired up again.
 
-# License
-
-If you make money with this method. It would be great if you gave me some of your profit. I have not been able to use the method successfully so far. I assume no responsibility for anything.
-
-# Requirements
-
-## Tech
-
-- PHP 8.1
-- MariaDB 10.4 (MySQL is not working because of the error `SQLSTATE[42000]: Syntax error or access violation: 1170 BLOB/TEXT column 'url' used in key specification without a key length`)
-
-## APIs
-
-- TheNewsApi Subscription (19$ per month)
-- OpenAi Account with billing details (around 19$ / 50k news)
-- Simlarweb Account (Free Version)
-
-The analyses of 3,5 month costs around 40 dollar.
-First i used the Mediastack API to fetch news. But the rate limit is to low and the quality of TheNewsApi is better.
-
-# Install
-
-I have only brought the whole project so far that it runs locally. If you want to install it on a server, further steps may be necessary.
-
-1. `composer install`
-2. Update `.env` file
-3. `bin/console doctrine:database:create`
-4. `bin/console doctrine:schema:create`
-5. `bin/console doctrine:migrations:migrate`
-6. See Usage
-7. Install https://github.com/DevertNet/bitcoin-predict-frontend to see results in a graph
-
-Webserver should use `/public` as doc root. But you can use ddev (config included) or maybe `bin/console server:start` to launch that thing for the frontend.
-
-# Usage
-
-Fetch news into database. News will be fetched per day. Every API Request to the news api will be cached in the database. But not the actual day. So this command can safely fired multiple times without run in api limitations.
-Today:
-`./bin/console app:fetch-news`
-Specific range:
-`./bin/console app:fetch-news 2023-04-01 2023-01-01`
-
-Update the csv with domain popularity infos. This should be used after `app:fetch-news`. The command will put all domains from the fetched news in a csv and also fetch the simlarweb Global Rank. The simlarweb API will be only called once per domain. So you can safly fired multiple times.
-`./bin/console app:update-popularity-csv`
-
-Then rate the news for a given method. Several processes can be executed in parallel, as a random news item is always evaluated. Currently, the news that have not yet been rated are drawn randomly from the database as a list. However, this list is only drawn at the beginning and does not update itself. Therefore, the instances should be restarted regularly so that the lists are refreshed and if there are less than 1000 remainig news, only one instance should run.
-`./bin/console app:predict-rating-v1`
-`./bin/console app:predict-rating-v2`
-
 # Rating Method for PredictRatingV2
 
 ## Method
@@ -136,3 +87,52 @@ The problem why it can't work is perhaps the too small selection of news.
 PHPUnit can use the normal database, because its self cleaning. There is NO `_test` suffix for the db.
 
 `composer test`
+
+# Requirements
+
+## Tech
+
+- PHP 8.1
+- MariaDB 10.4 (MySQL is not working because of the error `SQLSTATE[42000]: Syntax error or access violation: 1170 BLOB/TEXT column 'url' used in key specification without a key length`)
+
+## APIs
+
+- TheNewsApi Subscription (19$ per month)
+- OpenAi Account with billing details (around 19$ / 50k news)
+- Simlarweb Account (Free Version)
+
+The analyses of 3,5 month costs around 40 dollar.
+First i used the Mediastack API to fetch news. But the rate limit is to low and the quality of TheNewsApi is better.
+
+# Install
+
+I have only brought the whole project so far that it runs locally. If you want to install it on a server, further steps may be necessary.
+
+1. `composer install`
+2. Update `.env` file
+3. `bin/console doctrine:database:create`
+4. `bin/console doctrine:schema:create`
+5. `bin/console doctrine:migrations:migrate`
+6. See Usage
+7. Install https://github.com/DevertNet/bitcoin-predict-frontend to see results in a graph
+
+Webserver should use `/public` as doc root. But you can use ddev (config included) or maybe `bin/console server:start` to launch that thing for the frontend.
+
+# Usage
+
+Fetch news into database. News will be fetched per day. Every API Request to the news api will be cached in the database. But not the actual day. So this command can safely fired multiple times without run in api limitations.
+Today:
+`./bin/console app:fetch-news`
+Specific range:
+`./bin/console app:fetch-news 2023-04-01 2023-01-01`
+
+Update the csv with domain popularity infos. This should be used after `app:fetch-news`. The command will put all domains from the fetched news in a csv and also fetch the simlarweb Global Rank. The simlarweb API will be only called once per domain. So you can safly fired multiple times.
+`./bin/console app:update-popularity-csv`
+
+Then rate the news for a given method. Several processes can be executed in parallel, as a random news item is always evaluated. Currently, the news that have not yet been rated are drawn randomly from the database as a list. However, this list is only drawn at the beginning and does not update itself. Therefore, the instances should be restarted regularly so that the lists are refreshed and if there are less than 1000 remainig news, only one instance should run.
+`./bin/console app:predict-rating-v1`
+`./bin/console app:predict-rating-v2`
+
+# License
+
+If you make money with this method. It would be great if you gave me some of your profit. I have not been able to use the method successfully so far. I assume no responsibility for anything.
