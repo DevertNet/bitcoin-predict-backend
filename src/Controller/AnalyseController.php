@@ -19,6 +19,6 @@ class AnalyseController extends AbstractController
     #[Route('/analyse', name: 'app_analyse')]
     public function index(): JsonResponse
     {
-        return $this->json($this->analyseService->getMatrix('2023-01-01', '2023-04-17', 1000));
+        return $this->json($this->analyseService->getMatrix('2022-08-14', '2022-12-14', 1000));
     }
 }

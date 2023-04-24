@@ -97,6 +97,6 @@ abstract class AppTestCase extends KernelTestCase
 
     protected function tearDown(): void
     {
-        //$this->removeTestNews();
+        $this->removeTestNews();
     }
 }

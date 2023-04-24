@@ -2,13 +2,12 @@
 
 namespace App\Command;
 
+use Exception;
 use DateTime;
-use DateTimeInterface;
 use App\Entity\News;
 use App\Service\NewsApi\ApiMediastack;
 use App\Service\NewsApi\ApiTheNewsApi;
 use App\Service\NewsApi\NewsRequestItem;
-use GuzzleHttp\Client;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -27,15 +26,14 @@ class FetchNewsCommand extends Command
 {
     private $logger;
     private $entityManager;
-    private $apiMediastack;
     private $io;
+    private $newsApi;
 
     public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, ApiMediastack $apiMediastack, ApiTheNewsApi $apiTheNewsApi)
     {
         $this->logger = $logger;
         $this->entityManager = $entityManager;
         $this->newsApi = $apiTheNewsApi;
-        $this->client = new Client();
 
         parent::__construct();
     }

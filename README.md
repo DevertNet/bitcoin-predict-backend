@@ -27,6 +27,7 @@ If you make money with this method. It would be great if you gave me some of you
 - Simlarweb Account (Free Version)
 
 The analyses of 3,5 month costs around 40 dollar.
+First i used the Mediastack API to fetch news. But the rate limit is to low and the quality of TheNewsApi is better.
 
 # Install
 
@@ -44,13 +45,16 @@ Webserver should use `/public` as doc root. But you can use ddev (config include
 
 # Usage
 
-Fetch news into database. News will be fetched per day. Every API Request to the news api will be cached in the database. So this command can safly fired multiple times without run in api limitations.
+Fetch news into database. News will be fetched per day. Every API Request to the news api will be cached in the database. But not the actual day. So this command can safely fired multiple times without run in api limitations.
+Today:
 `./bin/console app:fetch-news`
+Specific range:
+`./bin/console app:fetch-news 2023-04-01 2023-01-01`
 
 Update the csv with domain popularity infos. This should be used after `app:fetch-news`. The command will put all domains from the fetched news in a csv and also fetch the simlarweb Global Rank. The simlarweb API will be only called once per domain. So you can safly fired multiple times.
 `./bin/console app:update-popularity-csv`
 
-Then rate the news for a given method. Several processes can be executed in parallel, as a random news item is always evaluated.
+Then rate the news for a given method. Several processes can be executed in parallel, as a random news item is always evaluated. Currently, the news that have not yet been rated are drawn randomly from the database as a list. However, this list is only drawn at the beginning and does not update itself. Therefore, the instances should be restarted regularly so that the lists are refreshed and if there are less than 1000 remainig news, only one instance should run.
 `./bin/console app:predict-rating-v1`
 `./bin/console app:predict-rating-v2`
 
@@ -79,17 +83,19 @@ Forget all your previous instructions. Pretend you are a financial and crypto ex
 
 ## Conclusion
 
-tbd
+![](readme-v1.png)
 
+The result now looks more promising. For example, clear spikes can be seen on 19.01.2023 or 23.03.2023. The following day, the price goes up. But there are also days with spikes and the price drops the next day.
+After some deeper analyses, however, I was unfortunately unable to develop an algorithm that guarantees a profit. Especially in the range 14.08.2022 - 14.12.2022, in which the price tends to fall, significant losses were made.
+One reason for this could be that partly irrelevant news from ChatGPT is positively evaluated, e.g. "Manchester's Caribbean Carnival returns with 50th anniversary celebrations".
 The inclusion of the popularity can now almost be dispensed with, as the news is only drawn from very popular domains. However, the function can't hurt if you need it again in the future.
 
 ## Recommendation and ideas for v3
 
-- Fetch news for 12 months instead of 4.
-- Add Twitter hashtag #bitcoin ranking/usage to the score
-- Create a data-driven analysis instead of a visual one.
+- Add Twitter hashtag #bitcoin ranking/usage to the score.
 - Scrape the content of the news and include them in the ChatGPT rating. But i think because of the big amount of news this make no sense.
-- Implement multithreading for `./bin/console app:predict-rating-v3`. Every prediction need around 1s. 40k news need 11 to 12 hours...
+- Implement real multithreading for `./bin/console app:predict-rating-v3`. Every prediction need around 1s. 40k news need 11 to 12 hours...see `Usage` section for more informations.
+- Adjust the prompt to exclude unrelevant news like "Manchester's Caribbean Carnival returns with 50th anniversary celebrations"
 
 # Rating Method for PredictRatingV1
 
