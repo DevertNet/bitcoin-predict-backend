@@ -83,7 +83,7 @@ Forget all your previous instructions. Pretend you are a financial and crypto ex
 
 ## Conclusion
 
-![](readme-v2.png)
+![](readme-v2.jpg)
 
 The result now looks more promising. For example, clear spikes can be seen on 19.01.2023 or 23.03.2023. The following day, the price goes up. But there are also days with spikes and the price drops the next day.
 After some deeper analyses, however, I was unfortunately unable to develop an algorithm that guarantees a profit. Especially in the range 14.08.2022 - 14.12.2022, in which the price tends to fall, significant losses were made.
